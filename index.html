@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mural Digital Interactivo</title>
+  <link rel="icon" type="image/png" href="imagen/logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Variables de colores y estilos */
+    :root {
+      --primary: #006847;
+      --secondary: #CE1126;
+      --accent: #FCBF49;
+      --light: #F5F5F5;
+      --dark: #333333;
+      --transition: all 0.3s ease;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --piaget-color: #9b59b6; /* Nuevo color para Piaget */
+    }
+    /* Estilos generales */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: var(--light);
+      overflow-x: hidden;
+    }
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    /* Header y navegación */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #00432a 100%);
+      color: white;
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+    .logo-icon-link {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+    .logo i {
+      margin-right: 10px;
+      color: var(--secondary); /* Cambiado a rojo */
+    }
+    .logo-text {
+      color: white; /* Texto en blanco como solicitado */
+      text-decoration: none; /* Sin subrayado */
+    }
+    .nav-menu {
+      display: flex;
+      list-style: none;
+    }
+    .nav-item {
+      margin-left: 1.5rem;
+    }
+    .nav-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      padding: 0.5rem 0;
+      position: relative;
+    }
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: 0;
+      left: 0;
+      background-color: var(--accent);
+      transition: var(--transition);
+    }
+    .nav-link:hover:after {
+      width: 100%;
+    }
+    .hamburger {
+      display: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+    }
+    /* Hero Section with Slider */
+    .hero {
+      height: 70vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: white;
+    }
+    .slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 300%;
+      height: 100%;
+      display: flex;
+      transition: transform 1s ease-in-out;
+    }
+    .slide {
+      width: 100vw;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    .slide:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      padding: 2rem;
+    }
+    .hero-title {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    .hero-subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    }
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .pagination {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 1;
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .dot.active {
+      background: white;
+    }
+    .btn {
+      display: inline-block;
+      background: var(--secondary); /* Cambiado a rojo */
+      color: white; /* Cambiado a blanco */
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+      border: 2px solid transparent;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      background: #a50c1e; /* Rojo más oscuro */
+    }
+    .btn.btn-secondary {
+      background: transparent;
+      border: 2px solid var(--secondary); /* Cambiado a rojo */
+      color: white;
+    }
+    .btn.btn-secondary:hover {
+      background: var(--secondary);
+      color: white;
+    }
+    /* Secciones */
+    .section {
+      padding: 5rem 0;
+    }
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+      color: var(--primary);
+      position: relative;
+      padding-bottom: 1rem;
+    }
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--secondary);
+      border-radius: 2px;
+    }
+    /* Style for opening quote */
+    .opening-quote {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--secondary);
+      position: relative;
+      top: 0.1em;
+    }
+    /* -- INICIO DE ESTILOS PARA TARJETAS SIN GIRO -- */
+    .institutions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    a.institution-card-link {
+      text-decoration: none;
+      color: inherit;
+    }
+    .institution-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .institution-card:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    .card-img {
+      height: 180px;
+      overflow: hidden;
+    }
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+    .card-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1; /* Permite que el contenido crezca */
+    }
+    .card-title {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: var(--primary);
+    }
+    .card-text {
+      margin-bottom: 1.5rem;
+      color: #666;
+      flex-grow: 1;
+    }
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--secondary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+      margin-top: auto; /* Empuja el enlace al final */
+    }
+    .card-link i {
+      margin-left: 5px;
+      transition: var(--transition);
+    }
+    .card-link:hover {
+      color: #a50c1e;
+    }
+    .card-link:hover i {
+      transform: translateX(5px);
+    }
+    /* -- FIN DE ESTILOS PARA TARJETAS -- */
+    /* Acordeón de niveles educativos */
+    .levels-accordion {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .accordion-item {
+      margin-bottom: 1rem;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .accordion-header {
+      background: white;
+      padding: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+    }
+    .accordion-header:hover {
+      background: #e0e0e0;
+    }
+    .accordion-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .accordion-icon {
+      transition: var(--transition);
+    }
+    .accordion-content {
+      background: white;
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .accordion-content-inner {
+      padding: 1.25rem;
+      border-top: 1px solid #eee;
+    }
+    .accordion-content-inner ul {
+      list-style: none;
+      padding: 0;
+    }
+    .accordion-content-inner ul li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .accordion-content-inner ul li i {
+      color: var(--primary);
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+    .accordion-item.active .accordion-icon {
+      transform: rotate(180deg);
+    }
+    .accordion-item.active .accordion-content {
+      max-height: 500px;
+    }
+    /* ESTILOS PARA LA SECCIÓN DE REFORMAS EDUCATIVAS */
+    .reforms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .reform-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .reform-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+    .reform-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    .heartbeat {
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+    .reform-card h3 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    .reform-card p {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .reform-details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      margin-top: 1rem;
+      text-align: left;
+    }
+    .reform-card.active .reform-details {
+      max-height: 1000px; /* Aumentado para el slider */
+    }
+    /* Menú circular de interacciones */
+    .interactions-section {
+      text-align: center;
+      position: relative;
+      padding: 4rem 0;
+    }
+    .circular-menu {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+      perspective: 1000px;
+    }
+    .menu-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+      transition: var(--transition);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      animation: heartbeat 2s infinite;
+    }
+    .menu-button:hover {
+      background: #004d33;
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    @keyframes heartbeat {
+      0% { transform: translate(-50%, -50%) scale(1); }
+      15% { transform: translate(-50%, -50%) scale(1.1); }
+      30% { transform: translate(-50%, -50%) scale(1); }
+      45% { transform: translate(-50%, -50%) scale(1.1); }
+      60% { transform: translate(-50%, -50%) scale(1); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+    .menu-items {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      list-style: none;
+      transform: translate(-50%, -50%);
+    }
+    .menu-item {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      transition: var(--transition);
+      transform-origin: center;
+      opacity: 0;
+      visibility: hidden;
+    }
+    .menu-item a {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--secondary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      text-decoration: none;
+      transition: var(--transition);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .menu-item a:hover {
+      background: #a50c1e;
+      transform: scale(1.1);
+    }
+    .menu-active .menu-item {
+      opacity: 1;
+      visibility: visible;
+    }
+    .menu-active .menu-item:nth-child(1) { transform: translate(0, -120px); }
+    .menu-active .menu-item:nth-child(2) { transform: translate(104px, -60px); }
+    .menu-active .menu-item:nth-child(3) { transform: translate(104px, 60px); }
+    .menu-active .menu-item:nth-child(4) { transform: translate(0, 120px); }
+    .menu-active .menu-item:nth-child(5) { transform: translate(-104px, 50px); }
+    .menu-active .menu-item:nth-child(6) { transform: translate(-104px, -50px); }
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000; /* Aumentado para estar sobre todo */
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      width: 90%;
+      max-width: 600px;
+      border-radius: var(--radius);
+      padding: 2rem;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #999;
+      transition: var(--transition);
+    }
+    .modal-close:hover {
+      color: var(--secondary);
+    }
+    .modal-title {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      padding-right: 2rem;
+    }
+    .modal-text {
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    .modal-img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+    }
+    /* -- INICIO DE ESTILOS PARA NUEVO MENÚ DE PROPUESTAS -- */
+    #propuestas {
+      position: relative;
+      height: 80vh;
+      overflow: hidden;
+      background: #ececec;
+      padding: 0;
+      text-align: center;
+    }
+    #propuestas .container {
+      position: relative;
+      z-index: 2;
+      padding-top: 5rem;
+    }
+    #propuestas .section-title {
+      transition: transform 0.8s ease;
+    }
+    #propuestas.menu-deployed .section-title {
+      transform: translateY(-15vh);
+    }
+    #propuestas .section-description {
+      position: absolute;
+      top: calc(50% + 160px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease 0.5s, visibility 0.5s ease 0.5s;
+      z-index: 2;
+    }
+    #propuestas .instruction-text {
+      text-align: center;
+      margin-top: 2rem;
+      z-index: 2;
+      position: relative;
+      transition: transform 0.8s ease;
+    }
+    #propuestas.menu-deployed .instruction-text {
+      transform: translateY(20vh);
+    }
+    #propuestas.menu-deployed .section-description {
+      opacity: 1;
+      visibility: visible;
+    }
+    #propuestas #Button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      font-size: 18px;
+      text-align: center;
+      line-height: 60px;
+      background: #e74c3c;
+      border-radius: 50%;
+      color: #ececec;
+      cursor: pointer;
+      z-index: 3;
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+    #propuestas .Nav {
+      position: absolute;
+      margin: auto;
+      top: 0; right: 0; bottom: 0; left: 0;
+      width: 302px;
+      height: 302px;
+      font-size: 0;
+      transform: scale(0);
+      transition: transform 0.8s;
+      z-index: 2;
+    }
+    #propuestas .Nav.active {
+      transform: scale(1);
+    }
+    #propuestas .Nav a {
+      display: inline-block;
+      width: 150px;
+      height: 150px;
+      font-size: 28px;
+      text-decoration: none;
+      line-height: 150px;
+      text-align: center;
+      color: #fff;
+      animation: spinIn 0.8s ease;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    #propuestas .Nav a:hover {
+      transform: scale(1.1);
+    }
+    #propuestas .Nav a:nth-of-type(odd) { margin-right: 2px; }
+    #propuestas .Nav a:nth-child(1) { margin-bottom: 2px; background: #1abc9c; }
+    #propuestas .Nav a:nth-child(2) { background: #2ecc71; }
+    #propuestas .Nav a:nth-child(3) { background: #3498db; }
+    #propuestas .Nav a:nth-child(4) { background: #9b59b6; }
+    @keyframes spinIn {
+      0% { transform: rotate(-360deg) scale(0); opacity: 0; }
+      100% { transform: rotate(0deg) scale(1); opacity: 1; }
+    }
+    #propuestas canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    /* -- FIN DE ESTILOS PARA NUEVO MENÚ DE PROPUESTAS -- */
+    /* -- INICIO DE ESTILOS PARA LÍNEA DE TIEMPO -- */
+    #linea-tiempo {
+      background: #f9f9f9;
+    }
+    .timeline-slider-container {
+      position: relative;
+      width: 100%;
+      padding: 0 50px; /* Espacio para los botones */
+    }
+    .timeline-slider {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE 10+ */
+      scroll-behavior: smooth;
+    }
+    .timeline-slider::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
+    .timeline-item {
+      flex: 0 0 100%;
+      scroll-snap-align: center;
+      padding: 1rem;
+      box-sizing: border-box;
+      transition: transform 0.3s ease;
+    }
+    .timeline-item:hover {
+      transform: scale(1.02); /* Efecto de zoom */
+    }
+    .timeline-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      position: relative;
+      border-left: 5px solid var(--primary);
+      animation: fadeIn 0.5s ease-out;
+    }
+    /* Nuevo estilo para tarjetas de Piaget */
+    .timeline-card.piaget-card {
+      border-left: 5px solid var(--piaget-color);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .timeline-year {
+      position: absolute;
+      top: -20px;
+      left: 2rem;
+      background: var(--secondary);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .timeline-title {
+      color: var(--primary);
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .timeline-content ul {
+      list-style-type: '  ✔  ';
+      padding-left: 1.2rem;
+    }
+    .timeline-content ul li {
+      margin-bottom: 0.5rem;
+      padding-left: 0.5rem;
+    }
+    .timeline-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+    .timeline-nav:hover {
+      background: #004d33;
+      transform: translateY(-50%) scale(1.1);
+    }
+    .timeline-nav.prev {
+      left: 0;
+    }
+    .timeline-nav.next {
+      right: 0;
+    }
+    @media (min-width: 768px) {
+      .timeline-item {
+        flex-basis: 50%;
+      }
+    }
+    @media (min-width: 1024px) {
+      .timeline-item {
+        flex-basis: 33.33%;
+      }
+    }
+    /* -- FIN DE ESTILOS PARA LÍNEA DE TIEMPO -- */
+    /* Fuentes y créditos */
+    .sources-section {
+      background: #ececec;
+      padding: 4rem 0;
+    }
+    .sources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .source-item {
+      background: white;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+    .source-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--primary);
+    }
+    .source-details {
+      color: #666;
+      font-size: 0.9rem;
+      word-break: break-all;
+    }
+    /* Footer */
+    footer {
+      background: var(--dark);
+      color: white;
+      padding: 3rem 0 1.5rem;
+    }
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .footer-logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+    .footer-logo i {
+      margin-right: 10px;
+      color: var(--secondary); /* Cambiado a rojo */
+    }
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .social-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      color: white;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .social-icon:hover {
+      background: var(--secondary);
+      color: white;
+      transform: translateY(-3px);
+    }
+    .footer-contact h3, .footer-comments h3 {
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+    .footer-contact h3:after, .footer-comments h3:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--accent);
+    }
+    .footer-contact-info p {
+      margin-bottom: 0.75rem;
+      color: #ccc;
+      display: flex;
+      align-items: center;
+    }
+    .footer-contact-info i {
+      margin-right: 10px;
+      color: var(--secondary); /* Cambiado a rojo */
+      width: 20px;
+      text-align: center;
+    }
+    .comment-form {
+      display: flex;
+      flex-direction: column;
+      margin-top: 1rem;
+    }
+    .comment-input {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      border-radius: var(--radius);
+      margin-bottom: 0.5rem;
+      resize: vertical;
+    }
+    .comment-btn {
+      background: var(--secondary); /* Cambiado a rojo */
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .comment-btn:hover {
+      background: #a50c1e;
+    }
+    .comments-display-area {
+      margin-top: 1.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .comment-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.75rem;
+      border-radius: var(--radius);
+      margin-bottom: 0.5rem;
+      color: #ccc;
+      font-size: 0.9rem;
+      word-wrap: break-word;
+    }
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid #444;
+      font-size: 0.9rem;
+      color: #999;
+    }
+    /* Responsive */
+    @media (max-width: 992px) {
+      .hero-title { font-size: 2.5rem; }
+      .hero-subtitle { font-size: 1.25rem; }
+      .authors-container {
+        grid-template-columns: 1fr; /* Single column on smaller tablets */
+      }
+    }
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      .nav-menu {
+        position: fixed;
+        top: 70px;
+        right: -100%;
+        flex-direction: column;
+        background: var(--primary);
+        width: 80%;
+        height: calc(100vh - 70px);
+        transition: var(--transition);
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+      }
+      .nav-menu.active { right: 0; }
+      .nav-item { margin: 1rem 0; } /* Espaciado reducido */
+      .hero-title { font-size: 2rem; }
+      .hero-subtitle { font-size: 1.1rem; }
+      .circular-menu { width: 250px; height: 250px; }
+      .menu-active .menu-item:nth-child(1) { transform: translate(0, -100px); }
+      .menu-active .menu-item:nth-child(2) { transform: translate(87px, -50px); }
+      .menu-active .menu-item:nth-child(3) { transform: translate(87px, 50px); }
+      .menu-active .menu-item:nth-child(4) { transform: translate(0, 100px); }
+      .menu-active .menu-item:nth-child(5) { transform: translate(-87px, 50px); }
+      .menu-active .menu-item:nth-child(6) { transform: translate(-87px, -50px); }
+      .reforms-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+      .reform-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 1.7rem;
+      }
+    }
+    @media (max-width: 576px) {
+      .hero { height: 60vh; }
+      .hero-title { font-size: 1.75rem; }
+      .section { padding: 3rem 0; }
+      .circular-menu { width: 200px; height: 200px; }
+      .menu-button { width: 60px; height: 60px; font-size: 20px; }
+      .menu-item a { width: 50px; height: 50px; font-size: 18px; }
+      .menu-active .menu-item:nth-child(1) { transform: translate(0, -80px); }
+      .menu-active .menu-item:nth-child(2) { transform: translate(69px, -40px); }
+      .menu-active .menu-item:nth-child(3) { transform: translate(69px, 40px); }
+      .menu-active .menu-item:nth-child(4) { transform: translate(0, 80px); }
+      .menu-active .menu-item:nth-child(5) { transform: translate(-69px, 40px); }
+      .menu-active .menu-item:nth-child(6) { transform: translate(-69px, -40px); }
+      .reforms-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    /* Estilos originales para modales y tarjetas de fuentes */
+    #sepModal .modal-content,
+    #estatalesModal .modal-content,
+    #publicasModal .modal-content,
+    #privadasModal .modal-content,
+    #conacytModal .modal-content,
+    #universidadesModal .modal-content {
+      border-left: 5px solid var(--primary);
+    }
+    #formacionModal .modal-content {
+      border-left: 5px solid #1abc9c;
+    }
+    #tecnologiaModal .modal-content {
+      border-left: 5px solid #2ecc71;
+    }
+    #equidadModal .modal-content {
+      border-left: 5px solid #3498db;
+    }
+    #vinculacionModal .modal-content {
+      border-left: 5px solid #9b59b6;
+    }
+    .source-item:hover {
+      transform: scale(1.05) rotate(1deg);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    /* NUEVOS ESTILOS PARA SECCIÓN DE AUTORES */
+    .authors-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .author-card {
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
+    .author-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+    .author-image {
+      height: 350px; /* Aumentada la altura para que la imagen no se corte */
+      overflow: hidden;
+    }
+    .author-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .author-card:hover .author-image img {
+      transform: scale(1.05);
+    }
+    .author-info {
+      padding: 1.5rem;
+    }
+    .author-name {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    /* == INICIO DE ESTILOS CORREGIDOS PARA SLIDER DE ERICKSON == */
+    .erikson-stages {
+      margin: 3rem auto;
+      position: relative;
+      padding: 0;
+    }
+    .erikson-slider {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      scroll-behavior: smooth;
+      /* Padding a los lados para permitir que la primera/última tarjeta se centren */
+      padding-left: calc(50% - 150px);
+      padding-right: calc(50% - 150px);
+    }
+    .erikson-slider::-webkit-scrollbar {
+      display: none;
+    }
+    .erikson-stage {
+      flex: 0 0 300px;
+      scroll-snap-align: center;
+      margin: 0 15px;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+      opacity: 0.6; /* Hacemos las no activas un poco transparentes */
+    }
+    .erikson-stage.active {
+      transform: scale(1.15);
+      z-index: 10;
+      opacity: 1;
+    }
+    .stage-card {
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .stage-image {
+      height: 180px;
+      overflow: hidden;
+      position: relative;
+    }
+    .stage-image img,
+    .stage-image iframe {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: none;
+    }
+    .stage-content {
+      padding: 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .stage-title {
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+    .stage-age {
+      font-size: 0.9rem;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .stage-description {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+    .stage-number {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 10px;
+    }
+    .erikson-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 10;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+    .erikson-nav:hover {
+      background: #004d33;
+      transform: translateY(-50%) scale(1.1);
+    }
+    .erikson-nav.prev {
+      left: 10px;
+      z-index: 20;
+    }
+    .erikson-nav.next {
+      right: 10px;
+      z-index: 20;
+    }
+    /* == FIN DE ESTILOS CORREGIDOS PARA SLIDER DE ERICKSON == */
+    /* Estilos para el nuevo Modal de Portada */
+    .modal-portada {
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      border-radius: 10px;
+      padding: 0;
+      text-align: center;
+      max-width: 700px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      border-top: 10px solid;
+      border-bottom: 10px solid;
+      border-image-slice: 1;
+      border-image-source: linear-gradient(to left, var(--primary), var(--accent), var(--secondary));
+      overflow: hidden;
+    }
+    .portada-header {
+      padding: 1rem;
+      background-color: rgba(0, 104, 71, 0.1);
+    }
+    .portada-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin: 2rem 1rem;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .portada-author, .portada-docente {
+      font-size: 1.2rem;
+      color: var(--dark);
+      margin: 1rem 1.5rem;
+    }
+    .portada-author strong, .portada-docente strong {
+      color: var(--secondary);
+      font-weight: 700;
+    }
+    .portada-footer {
+      background-color: rgba(0, 104, 71, 0.1);
+      padding: 1.5rem;
+      margin-top: 2.5rem;
+      color: #555;
+      font-size: 1rem;
+      display: flex;
+      justify-content: space-around;
+      font-weight: 500;
+    }
+    /* Estilos para imágenes en la sección de Cultura */
+    .timeline-image {
+      height: 200px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      border-radius: var(--radius);
+    }
+    .timeline-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* Estilos para video responsivo */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      height: 0;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      border-radius: var(--radius);
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    /* Estilos para el icono de video en la tarjeta de bienvenida */
+    .video-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem auto;
+      color: var(--secondary);
+      font-size: 3rem;
+      cursor: pointer;
+      animation: heartbeat 1.5s ease-in-out infinite;
+      width: 60px;
+      height: 60px;
+    }
+    /* Modal para video */
+    .video-modal .modal-content {
+      max-width: 450px; /* MODIFICACIÓN: Ancho reducido */
+      padding: 0;
+      overflow: hidden;
+    }
+    .video-modal iframe {
+      width: 100%;
+      height: 800px; /* MODIFICACIÓN: Altura incrementada */
+      border: none;
+    }
+    /* Estilos para imagen en tarjeta de reciclaje */
+    .source-image {
+      height: 180px;
+      overflow: hidden;
+      margin: -1.5rem -1.5rem 1rem -1.5rem;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+    .source-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* === NUEVOS ESTILOS PARA SLIDERS EN TARJETAS === */
+    .image-slider {
+      position: relative;
+      width: 100%;
+      margin-top: 1rem;
+      overflow: hidden;
+      border-radius: var(--radius);
+    }
+    .slider-container {
+      display: flex;
+      transition: transform 0.5s ease;
+      height: 200px; /* Modified Height */
+    }
+    .slider-image {
+      min-width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .slider-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .slider-button.prev {
+      left: 5px;
+    }
+    .slider-button.next {
+      right: 5px;
+    }
+    .slider-button:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+    /* === ESTILOS PARA ENLACE DE UBICACIÓN === */
+    .footer-contact-info a.location-link {
+      color: white !important;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .footer-contact-info a.location-link:hover {
+      text-decoration: underline;
+    }
+    /* === ESTILOS PARA MODAL DE VIDEO VERTICAL === */
+    .anniversary-video-modal .modal-content {
+      max-width: 400px;
+      width: 90%;
+      padding: 0;
+      overflow: hidden;
+    }
+    .anniversary-video-modal iframe {
+      width: 100%;
+      height: 720px; /* MODIFICACIÓN: Altura incrementada para laptop */
+      border: none;
+    }
+    /* Botón de reproducción para aniversario */
+    .play-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem auto;
+      color: var(--secondary);
+      font-size: 3rem;
+      cursor: pointer;
+      animation: heartbeat 1.5s ease-in-out infinite;
+      width: 60px;
+      height: 60px;
+    }
+    @media (max-width: 768px) {
+      .authors-container {
+        grid-template-columns: 1fr;
+      }
+      .erikson-stage {
+        flex: 0 0 250px;
+      }
+      .erikson-slider {
+        padding-left: calc(50% - 125px);
+        padding-right: calc(50% - 125px);
+      }
+      .portada-title {
+        font-size: 1.5rem;
+      }
+      .portada-author, .portada-docente {
+        font-size: 1rem;
+      }
+      .video-modal iframe {
+        height: 600px; /* MODIFICACIÓN: Altura ajustada para tablet */
+      }
+      .slider-container {
+        height: 170px; /* Modified Height */
+      }
+      .anniversary-video-modal iframe {
+        height: 550px; /* Se conserva la altura para móviles/tablets */
+      }
+    }
+    /* Ajustes para textos en Actividades Destacadas */
+    .source-item p {
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <a href="#inicio" class="logo-icon-link">
+          <i class="fas fa-graduation-cap"></i>
+        </a>
+        <span class="logo-text">Mural Virtual | Interactivo</span>
+      </div>
+      <button class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li class="nav-item"><a href="#inicio" class="nav-link">  🏦  Inicio</a></li>
+        <li class="nav-item"><a href="#niveles" class="nav-link">  💼  Directivos</a></li>
+        <li class="nav-item"><a href="#interacciones" class="nav-link">  📜  Efemérides</a></li>
+        <li class="nav-item"><a href="#reformas" class="nav-link">  🎓  Aniversario CECyTE</a></li>
+        <li class="nav-item"><a href="#linea-tiempo" class="nav-link">  🧉  Cultura</a></li>
+        <li class="nav-item"><a href="#fuentes" class="nav-link">  🪄  Destacados</a></li>
+      </ul>
+    </div>
+  </header>
+  <section id="inicio" class="hero">
+    <div class="slider" id="slider">
+      <div class="slide" style="background-image: url('imagen/bandera.gif');"></div>
+      <div class="slide" style="background-image: url('imagen/campana.gif');"></div>
+      <div class="slide" style="background-image: url('imagen/grito.gif');"></div>
+    </div>
+    <div class="hero-content">
+      <h1 class="hero-title">Septiembre: Mes de la Patria</h1>
+      <p class="hero-subtitle">El mes donde celebramos nuestra independencia y honramos nuestras tradiciones</p>
+      <div class="hero-buttons">
+        <a href="#instituciones" class="btn">Comenzar Exploración</a>
+        <a href="#" id="openPortadaModal" class="btn btn-secondary">Portada</a>
+      </div>
+    </div>
+    <div class="pagination" id="pagination">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </section>
+  <section id="instituciones" class="section">
+    <div class="container">
+      <h2 class="section-title">  🗞  <span class="opening-quote">"</span>Sumérgete al México Independiente</h2>
+      <p style="text-align: center; max-width: 800px; margin: 0 auto 2rem;">Septiembre no es solo el mes de la Independencia: es cuando México celebra su historia, honra a sus héroes y reafirma sus tradiciones.
+      Sumérgete en este mural interactivo, vive el espíritu patrio mexicano y descubre las fechas, personajes y tradiciones que hacen de este mes una celebración nacional.</p>
+      <div class="institutions-grid">
+        <a href="trivia.html" class="institution-card-link">
+          <div class="institution-card">
+            <div class="card-img"><img src="imagen/descover.jpg" alt="Trivia 1"></div>
+            <div class="card-content">
+              <h3 class="card-title">  🏆  Desbloquea datos curiosos</h3>
+              <p class="card-text">Clic aquí  👇 </p>
+              <span class="card-link">+ INFO <i class="fas fa-arrow-right"></i></span>
+            </div>
+          </div>
+        </a>
+        <a href="trivia.html" class="institution-card-link">
+          <div class="institution-card">
+            <div class="card-img"><img src="img_sep/cogni.jpg" alt="Trivia 2"></div>
+            <div class="card-content">
+              <h3 class="card-title">  👆  Haz clic y Descubre los 15 Héroes Escondidos</h3>
+              <p class="card-text">Te apuesto que no los conoces, ¡Vamos, adelante!</p>
+              <span class="card-link">+ INFO <i class="fas fa-arrow-right"></i></span>
+            </div>
+          </div>
+        </a>
+        <div class="institution-card">
+          <div class="card-img"><img src="imagen/c.jpg" alt="Universidades"></div>
+          <div class="card-content">
+            <h3 class="card-title">  🕵  Descubramos juntos</h3>
+            <p class="card-text">Este mural interacttivo te permitirá interactuar para explorar los hechos mas importantes de nuestra historia.
+              <b>¡¡Acompáñame a dar el recorrido!!  👉  </b></p>
+              <a href="#niveles" class="card-link">Ir ya! <i class="fas fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="niveles" class="section" style="background: #f9f9f9;">
+      <div class="container">
+        <h2 class="section-title">  👪  Directivos de la Institución</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 2rem;">A continuación, nos complace presentar al Maestro <b>Martín Gutiérrez</b> y a la Maestra <b>Silvia Islas</b>, quienes están al frente de nuestro equipo directivo aportando su sólida formación académica y experiencia en liderazgo educativo.</p>
+        <div class="authors-container">
+          <div class="author-card">
+            <div class="author-image">
+              <img src="imagen/dir.jpg" alt="Jean Piaget">
+            </div>
+            <div class="author-info">
+              <h3 class="author-name">  💼  Mtr. Martín Gutiérrez</h3>
+              <div class="accordion-item">
+                <div class="accordion-header">
+                  <h3 class="accordion-title">Director del Plantel - CECyTE 2</h3>
+                  <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="accordion-content">
+                  <div class="accordion-content-inner">
+                    <p>Líder educativo con sólida formación en gestión institucional. Ha dirigido equipos multidisciplinarios y trabajos colaborativos.</p><br>
+                    <ul>
+                      <li><i class="fas fa-shapes"></i><b>Maestro en Ciencias de la Educación</b></li>
+                    </ul>
+                    <p>Especialista en desarrollo de competencias del siglo XXI. Impulsor de prácticas educativas innovadoras.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="author-card">
+            <div class="author-image">
+              <img src="imagen/sub.jpg" alt="Erik Erikson">
+            </div>
+            <div class="author-info">
+              <h3 class="author-name">  💼  Mtr. Silvia Islas</h3>
+              <div class="accordion-item">
+                <div class="accordion-header">
+                  <h3 class="accordion-title">Subdirectora del Plantel - CECyTE 2</h3>
+                  <span class="accordion-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="accordion-content">
+                  <div class="accordion-content-inner">
+                    <p>Comprometida con la excelencia académica y el desarrollo integral del estudiante.</p><br>
+                    <ul>
+                      <li><i class="fas fa-cogs"></i><b>Maestra en Ciencias de la Educación</b></li>
+                    </ul>
+                    <p> Con más de 5 años de experiencia en administración educativa.
+                    Ha liderado proyectos de innovación pedagógica, por ejemplo: metodologías de aprendizaje activo por mencionar algunas. </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="interacciones" class="section">
+      <div class="container">
+        <h2 class="section-title">  📜  Efemérides de Septiembre</h2>
+        <p style="text-align:center; max-width: 800px; margin: 0 auto 2rem;">Te invito a dar un recorrido a las efemérides y fechas importantes que acontecieron en México en el mes de septiembre a través del timeline.</p>
+        <div class="erikson-stages">
+          <button class="erikson-nav prev"><i class="fas fa-chevron-left"></i></button>
+          <div class="erikson-slider">
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/metro.jpg" alt="Confianza vs. Desconfianza">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">4</span>de septiembre</h3>
+                  <p class="stage-age">Inauguración del Metro de la CDMX</p>
+                  <p class="stage-description">Se inaugura la Línea 1 del Sistema de Transporte Colectivo Metro en 1969.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/mujer_indi.jpg" alt="Autonomía vs. Vergüenza y Duda">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">5</span>de septiembre</h3>
+                  <p class="stage-age">Día Internacional de la Mujer Indígena</p>
+                  <p class="stage-description">Conmemoración de la lucha de las mujeres indígenas por sus derechos.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="https://images.unsplash.com/photo-1495020689067-958852a7765e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" alt="Iniciativa vs. Culpa">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">8</span>de septiembre</h3>
+                  <p class="stage-age">Día Internacional del Periodista</p>
+                  <p class="stage-description">Celebración de la labor de los periodistas en todo el mundo.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/josefa.gif" alt="Laboriosidad vs. Inferioridad">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">9</span>de septiembre</h3>
+                  <p class="stage-age">Natalicio de Josefa Ortiz de Domínguez</p>
+                  <p class="stage-description">Nacimiento de la heroína de la Independencia en 1768.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/n_heroes.jpg" alt="Identidad vs. Confusión de Roles">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">13</span>de septiembre</h3>
+                  <p class="stage-age">Día de los Niños Héroes</p>
+                  <p class="stage-description">Conmemoración de la gesta heroica de los cadetes del Castillo de Chapultepec en 1847.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <iframe id="grito-video" width="100%" height="100%" src="about:blank" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">15</span>de septiembre</h3>
+                  <p class="stage-age">Grito de Independencia</p>
+                  <p class="stage-description">Conmemoración del inicio de la lucha por la independencia de México en 1810.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/desfile.jpg" alt="Generatividad vs. Estancamiento">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">16</span>de septiembre</h3>
+                  <p class="stage-age">Día de la Independencia</p>
+                  <p class="stage-description">Celebración de la independencia de México con desfiles militares y eventos cívicos.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/terremoto.gif" alt="Integridad vs. Desesperación">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">19</span>de septiembre</h3>
+                  <p class="stage-age">Terremoto de 1985</p>
+                  <p class="stage-description">Un sismo de 8.1 grados causa destrucción en la Ciudad de México.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/paz.gif" alt="Integridad vs. Desesperación">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">21</span>de septiembre</h3>
+                  <p class="stage-age">Día Internacional de la Paz</p>
+                  <p class="stage-description">Promoción de la paz mundial y no violencia.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/consumacion.jpg" alt="Integridad vs. Desesperación">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">27</span>de septiembre</h3>
+                  <p class="stage-age">Consumación de la Independencia</p>
+                  <p class="stage-description">Entrada del Ejército Trigarante a la Ciudad de México en 1821.</p>
+                </div>
+              </div>
+            </div>
+            <div class="erikson-stage">
+              <div class="stage-card">
+                <div class="stage-image">
+                  <img src="imagen/morelos.jpg" alt="Integridad vs. Desesperación">
+                </div>
+                <div class="stage-content">
+                  <h3 class="stage-title"><span class="stage-number">30</span>de septiembre</h3>
+                  <p class="stage-age">Natalicio de José María Morelos</p>
+                  <p class="stage-description">Nacimiento del héroe de la Independencia en 1765.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="erikson-nav next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </section>
+    <section id="reformas" class="section">
+      <div class="container">
+        <h2 class="section-title">  🎆  Aniversario CECyTE 2</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 2rem;">
+          ¡Celebrando el décimo Aniversario de excelencia educativa! El Colegio de Estudios Científicos y Tecnológicos Plantel 2 Playa del Carmen conmemora una década de brindar educación de calidad a la juventud playense.
+          Fundado en 2015, el CECyTE 2 se ha consolidado como una de las instituciones educativas más importantes del país, siendo el 9no.
+          Plantel en Quintana Roo, con presencia en todos los estados de la República Mexicana.
+          Durante este mes de septiembre, se llevaron a cabo diversas actividades académicas, culturales y deportivas para celebrar este importante aniversario.
+        </p>
+        <div class="reforms-grid">
+          <div class="reform-card">
+            <div class="reform-icon heartbeat">
+              <i class="fas fa-project-diagram"></i>
+            </div>
+            <h3>  🎊  X Aniversario</h3>
+            <p>Xplora para conocer más  🪄 </p>
+            <div class="play-button" data-video="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F672801938440240%2F&show_text=false&width=267&t=0">
+              <i class="fas fa-play-circle"></i>
+            </div>
+            <div class="reform-details"><hr>
+              <p>  📌  Te invito a disfrutar del video, para festejar el magno Aniversario del CECyTE Plantel 2 Playa del Carmen</p>
+            </div>
+          </div>
+          <div class="reform-card">
+            <div class="reform-icon heartbeat">
+              <i class="fas fa-globe-americas"></i>
+            </div>
+            <h3>  🏀  Actividades Deportivas</h3>
+            <p>Activate con el deporte  🏃 </p>
+            <div class="reform-details"><hr>
+              <p>  📌  Descubre como se vive el deporte en el CECyTE 2 Plantel Playa del Carmen, sé parte de esta generación de deportistas.</p>
+              <div class="image-slider">
+                <button class="slider-button prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="slider-container">
+                  <img src="imagen/d1.jpg" alt="Deporte 1" class="slider-image">
+                  <img src="imagen/d2.jpg" alt="Deporte 2" class="slider-image">
+                  <img src="imagen/d3.jpg" alt="Deporte 3" class="slider-image">
+                  <img src="imagen/d4.jpg" alt="Deporte 4" class="slider-image">
+                  <img src="imagen/d5.jpg" alt="Deporte 5" class="slider-image">
+                </div>
+                <button class="slider-button next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="reform-card">
+            <div class="reform-icon heartbeat">
+              <i class="fas fa-hands-helping"></i>
+            </div>
+            <h3>  💃  Actividades Culturales</h3>
+            <p> Fomentan los valores patrios y el sentido de comunidad  👩 ‍ 🎓 </p>
+            <div class="reform-details"><hr>
+              <p>  📌  Las actividades culturales en el CECyTE Playa del Carmen incluyen eventos cívicos, como los actos de izamiento de bandera y entrega de reconocimientos, que fomentan los valores patrios y el sentido de comunidad, además de promover el esfuerzo y los resultados de los estudiantes, docentes y directivos.</p>
+              <div class="image-slider">
+                <button class="slider-button prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="slider-container">
+                  <img src="imagen/escolta.jpg" alt="Cultura 2" class="slider-image">
+                  <img src="imagen/esc.jpg" alt="Cultura 2" class="slider-image">
+                  <img src="imagen/reco.jpg" alt="Cultura 2" class="slider-image">
+                  <img src="imagen/cultura.jpg" alt="Cultura 1" class="slider-image">
+                </div>
+                <button class="slider-button next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="reform-card">
+            <div class="reform-icon heartbeat">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <h3>  🧠  Concurso de Conocimiento</h3>
+            <p>Olimpiadas del Conocimiento  🎯 </p>
+            <div class="reform-details"><hr>
+              <p>  📌  Es un tipo de competencia, a menudo académica, donde los participantes demuestran sus saberes sobre un tema específico o general, ya sea de forma individual o en equipo.
+              Pueden ser organizados por instituciones educativas para incentivar el aprendizaje, como las Olimpiadas del Conocimiento para estudiantes.</p>
+              <div class="image-slider">
+                <button class="slider-button prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="slider-container">
+                  <img src="imagen/conocimiento.jpg" alt="Conocimiento 1" class="slider-image">
+                  <img src="imagen/c5.jpg" alt="Conocimiento 2" class="slider-image">
+                  <img src="imagen/con1.jpg" alt="Conocimiento 2" class="slider-image">
+                  <img src="imagen/con2.jpg" alt="Conocimiento 3" class="slider-image">
+                  <img src="imagen/cooks.jpg" alt="Conocimiento 4" class="slider-image">
+                </div>
+                <button class="slider-button next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="reform-card">
+            <div class="reform-icon heartbeat">
+              <i class="fas fa-users"></i>
+            </div>
+            <h3>  🔬  Creatividad tecnológica</h3>
+            <p>Concurso Estatal 2025  🤖 </p>
+            <div class="reform-details"><hr>
+              <p>  📌  El plantel del CECyTE Playa del Carmen II en conjunto con 8 planteles  🏫  más del estado de Quintana Roo realizaron el pasado Viernes 28 de Febrero el Concurso de Creatividad Tecnológica 2025 en CECyTE Cancún Plantel I en el cual se llevó el segundo lugar  🥈  en el prototipo de Investigación con el nombre de "EBA" a cargo del profesor Mauricio Alejandro Domínguez Chirino en conjunto con sus estudiantes  🥳 .</p>
+              <div class="image-slider">
+                <button class="slider-button prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="slider-container">
+                  <img src="imagen/tecnol.jpg" alt="Tecnología 1" class="slider-image">
+                  <img src="imagen/tec1.jpg" alt="Tecnología 3" class="slider-image">
+                  <img src="imagen/tec2.jpg" alt="Tecnología 4" class="slider-image">
+                  <img src="imagen/tec3.jpg" alt="Tecnología 4" class="slider-image">
+                  <img src="imagen/tec4.jpg" alt="Tecnología 4" class="slider-image">
+                  <img src="imagen/tec5.jpg" alt="Tecnología 4" class="slider-image">
+                </div>
+                <button class="slider-button next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="reform-card">
+            <div class="reform-icon heartbeat">
+              <i class="fas fa-tools"></i>
+            </div>
+            <h3>  🛠️  Carreras Técnicas</h3>
+            <p>Conoce la oferta educativa del plantel.</p>
+            <div class="reform-details">
+              <hr>
+              <p>📌 El CECyTE 2 ofrece carreras técnicas diseñadas para el futuro laboral: Técnico en Mantenimiento Industrial, Técnico en Alimentos y Bebidas, Técnico en Electricidad y Técnico en Programación.</p>
+              <div class="image-slider">
+                <button class="slider-button prev"><i class="fas fa-chevron-left"></i></button>
+                <div class="slider-container">
+                  <img src="imagen/mantenimiento.jpg" alt="Mantenimiento Industrial" class="slider-image">
+                  <img src="imagen/alimentos.jpg" alt="Alimentos y Bebidas" class="slider-image">
+                  <img src="imagen/electricidad.jpg" alt="Electricidad" class="slider-image">
+                  <img src="imagen/programacion.jpg" alt="Programación" class="slider-image">
+                </div>
+                <button class="slider-button next"><i class="fas fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="linea-tiempo" class="section">
+      <div class="container">
+        <h2 class="section-title">  🧉  Cultura y Tradiciones Mexicanas</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 2rem;">
+          La noche del 15 de septiembre, se realiza "El Grito de Dolores" en las plazas principales, donde el presidente replica el llamado a la rebelión de Miguel Hidalgo.
+          Las festividades incluyen desfiles, música de mariachi, bailes folclóricos, pirotecnia y gastronomía tradicional como el pozole y los chiles en nogada
+        </p>
+        <div class="timeline-slider-container">
+          <button class="timeline-nav prev"><i class="fas fa-chevron-left"></i></button>
+          <div class="timeline-slider">
+            <div class="timeline-item">
+              <div class="timeline-card piaget-card">
+                <div class="timeline-image">
+                  <img src="imagen/desfile.jpg" alt="Desfile militar">
+                </div>
+                <div class="timeline-year">Desfiles</div>
+                <h4 class="timeline-title">Conmemora el inicio de la lucha por la independencia</h4>
+                <div class="timeline-content">
+                  <ul>
+                    <li> Es un evento simbólico que se realiza en el balcón del Palacio Nacional y en otras plazas del país.
+                    Representa el orgullo nacional, mostrando las capacidades de las Fuerzas Armadas de México y la Guardia Nacional.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-card">
+                <div class="timeline-image">
+                  <img src="imagen/mariachi.jpg" alt="Mariachi">
+                </div>
+                <div class="timeline-year">Mariachi</div>
+                <h4 class="timeline-title">Celebración con Mariachi</h4>
+                <div class="timeline-content">
+                  <ul>
+                    <li>El mariachi es una parte fundamental de las celebraciones del 15 y 16 de septiembre en todo México, ya que se asocia con la música y el orgullo nacional.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-card piaget-card">
+                <div class="timeline-image">
+                  <img src="imagen/bailes.jpg" alt="Baile folclórico">
+                </div>
+                <div class="timeline-year">Folklor</div>
+                <h4 class="timeline-title">Músicas y Danzas folclóricas</h4>
+                <div class="timeline-content">
+                  <ul>
+                    <li>El mariachi es un elemento indispensable, y se presentan danzas folclóricas que enaltecen las raíces mexicanas.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-card">
+                <div class="timeline-image">
+                  <img src="imagen/decopal.jpg" alt="Decoraciones tricolor">
+                </div>
+                <div class="timeline-year">Decoraciones</div>
+                <h4 class="timeline-title">Decoraciones Tricolor</h4>
+                <div class="timeline-content">
+                  <ul>
+                    <li>Calles, plazas y hogares se visten de verde, blanco y rojo con banderas, papel picado y faroles iluminados.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-card piaget-card">
+                <div class="timeline-image">
+                  <img src="imagen/pozole.jpg" alt="Pozole">
+                </div>
+                <div class="timeline-year">Pozole</div>
+                <h4 class="timeline-title">El Pozole en Septiembre</h4>
+                <div class="timeline-content">
+                  <ul>
+                    <li>Se come pozole en septiembre como plato principal de la celebración de la Noche del Grito de la Independencia, el 15 de septiembre, y es un símbolo de patriotismo y de la identidad mexicana.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-card">
+                <div class="timeline-image">
+                  <img src="imagen/chiles.jpg" alt="Chiles en nogada">
+                </div>
+                <div class="timeline-year">Chiles en nogada</div>
+                <h4 class="timeline-title">Platillo tradicional mexicano </h4>
+                <div class="timeline-content">
+                  <ul>
+                    <li>Se consume durante las Fiestas Patrias en septiembre, especialmente el 15 de septiembre, ya que su historia está ligada la Independencia de México.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="timeline-nav next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </section>
+    <section id="fuentes" class="sources-section">
+      <div class="container">
+        <h2 class="section-title">  🪄  Actividades Destacadas</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 2rem;">Información de las actividades educativas destacadas de la comunidad escolar.</p>
+        <div class="sources-grid">
+          <div class="source-item">
+            <div class="source-image">
+              <img src="imagen/recicla.jpg" alt="Campaña de reciclaje">
+            </div>
+            <h3 class="source-title">Campaña de reciclaje en el CECyTE II</h3>
+            <p class="source-details">La institución impulsa iniciativa ecológica para promover el cuidado del medio ambiente.</p>
+          </div>
+          <div class="source-item">
+            <h3 class="source-title">Bienvenido ciclo escolar 2025-2026</h3>
+            <p class="source-details">
+              ¡Inicio a un nuevo ciclo lleno de retos, aprendizajes y grandes logros para toda la comunidad CECyTE II!
+            </p>
+            <div class="video-icon" data-video="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F611950995075024%2F&show_text=false&width=267&t=0">
+              <i class="fas fa-play-circle"></i>
+            </div>
+          </div>
+          <div class="source-item">
+            <h3 class="source-title">Día Naranja</h3>
+            <p class="source-details">Los 25 de cada mes son días clave para recordar que el 25 de noviembre se conmemora el Día Internacional de la Eliminación de la Violencia contra la Mujer, una fecha que se estableció para honrar la lucha de las hermanas Mirabal en su resistencia contra el dictador <em>Rafael Leónidas Trujillo</em>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-about">
+            <div class="footer-logo">
+              <i class="fas fa-graduation-cap"></i>
+              <span> Mural Virtual - Interactivo</span>
+            </div>
+            <p>Documental digital interactivo sobre los acontecimientos más relevantes del mes de septiembre: "Mes Patrio" y de nuestra comunidad educativa.
+            Diseñado con pasión y dedicación para ustedes.</p>
+            <div class="footer-social">
+              <a href="https://www.facebook.com/Cecyteplaya2/" class="social-icon" target="_blank"><i class="fab fa-facebook-f"></i></a>
+              <a href="https://www.youtube.com/" class="social-icon" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+          </div>
+          <div class="footer-contact">
+            <h3>Contacto</h3>
+            <div class="footer-contact-info">
+              <p><i class="fas fa-user"></i> Autor(es): Alumnos de 3A TP - Ing. Héctor L. Pérez</p>
+              <p><i class="fas fa-envelope"></i> plantel.playa2@cecyteqroo.edu.mx</p>
+              <p><i class="fas fa-phone"></i> +52 (984) 688 4154</p>
+              <p><i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                <a href="https://maps.app.goo.gl/64ALJY81eLAd96oB8" class="location-link" target="_blank" rel="noopener noreferrer">
+                  Avenida del Carmen Esq. Playa Langosta S/N Residencial, Playa Azul, 77724 Playa del Carmen, Q.R. C.P.
+                  77724, Playa del Carmen, México
+                </a>
+              </p>
+            </div>
+          </div>
+          <div class="footer-comments">
+            <h3>Comentarios</h3>
+            <p>Déjanos tu opinión.</p>
+            <form class="comment-form" id="commentForm">
+              <textarea id="commentInput" class="comment-input" placeholder="Escribe tu comentario aquí..." rows="3"></textarea>
+              <button type="submit" class="comment-btn">Comentar</button>
+            </form>
+            <div class="comments-display-area" id="commentsDisplay">
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2025 Periódico Mural - Virtual Interactivo: Septiembre. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    </footer>
+    <div class="modal" id="portadaModal">
+      <div class="modal-content modal-portada">
+        <button class="modal-close">×</button>
+        <div class="portada-header"></div>
+        <h2 class="portada-title">PERIÓDICO MURAL VIRTUAL INTERACTIVO: MES DE SEPTIEMBRE</h2>
+        <p class="portada-author"><strong>Realizado por:</strong> Alumnos de 3A TP</p>
+        <p class="portada-author"><strong>Dirigidos por:</strong> Ing. Héctor L. P. Ramírez</p>
+        <p class="portada-docente"><strong>Institución:</strong> CECyTE Plantel 2 Playa del Carmen.</p>
+        <div class="portada-footer">
+          <p>Playa del Carmen, Q. Roo</p>
+          <p>Agosto 30, 2025</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal video-modal" id="videoModal">
+      <div class="modal-content">
+        <button class="modal-close">×</button>
+        <iframe id="videoFrame" src="" width="100%" height="450" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
+      </div>
+    </div>
+    <div class="modal anniversary-video-modal" id="anniversaryVideoModal">
+      <div class="modal-content">
+        <button class="modal-close">×</button>
+        <iframe id="anniversaryVideoFrame" src="" width="100%" height="550" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+// -- SCRIPT DE FUNCIONALIDADES GENERALES Y COMENTARIOS --
+document.addEventListener('DOMContentLoaded', () => {
+// Menu Hamburguesa
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('navMenu');
+if (hamburger) {
+  hamburger.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+    hamburger.innerHTML = navMenu.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+  });
+}
+// Cerrar menú al hacer clic en un enlace
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if(navMenu.classList.contains('active')) {
+      navMenu.classList.remove('active');
+      hamburger.innerHTML = '<i class="fas fa-bars"></i>';
+    }
+  });
+});
+// Acordeón
+const accordionItems = document.querySelectorAll('.accordion-item');
+accordionItems.forEach(item => {
+  const header = item.querySelector('.accordion-header');
+  header.addEventListener('click', () => {
+    const currentlyActive = document.querySelector('.accordion-item.active');
+    if (currentlyActive && currentlyActive !== item) {
+      currentlyActive.classList.remove('active');
+    }
+    item.classList.toggle('active');
+  });
+});
+// Lógica de Modales (unificada)
+const modalOpenTriggers = document.querySelectorAll('[data-modal], #openPortadaModal, .video-icon, .play-button');
+const modalCloseButtons = document.querySelectorAll('.modal-close');
+const modals = document.querySelectorAll('.modal');
+modalOpenTriggers.forEach(trigger => {
+  trigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    let modalId;
+    if (trigger.id === 'openPortadaModal') {
+      modalId = 'portadaModal';
+    } else if (trigger.classList.contains('video-icon')) {
+      modalId = 'videoModal';
+      let videoUrl = trigger.getAttribute('data-video');
+// MODIFICACIÓN: Añadir autoplay al video
+document.getElementById('videoFrame').src = videoUrl + '&autoplay=1';
+} else if (trigger.classList.contains('play-button')) {
+  modalId = 'anniversaryVideoModal';
+  let videoUrl = trigger.getAttribute('data-video');
+// MODIFICACIÓN: Añadir autoplay al video
+document.getElementById('anniversaryVideoFrame').src = videoUrl + '&autoplay=1';
+} else {
+  modalId = trigger.getAttribute('data-modal') + 'Modal';
+}
+const modal = document.getElementById(modalId);
+if (modal) modal.classList.add('active');
+});
+});
+modalCloseButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const modal = button.closest('.modal');
+    modal.classList.remove('active');
+// Detener el video cuando se cierra el modal
+if (modal.id === 'videoModal') {
+  document.getElementById('videoFrame').src = '';
+} else if (modal.id === 'anniversaryVideoModal') {
+  document.getElementById('anniversaryVideoFrame').src = '';
+}
+});
+});
+modals.forEach(modal => {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('active');
+// Detener el video cuando se cierra el modal
+if (modal.id === 'videoModal') {
+  document.getElementById('videoFrame').src = '';
+} else if (modal.id === 'anniversaryVideoModal') {
+  document.getElementById('anniversaryVideoFrame').src = '';
+}
+}
+});
+});
+// Cerrar modal con tecla ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    modals.forEach(modal => {
+      if (modal.classList.contains('active')) {
+        modal.classList.remove('active');
+// Detener el video cuando se cierra el modal
+if (modal.id === 'videoModal') {
+  document.getElementById('videoFrame').src = '';
+} else if (modal.id === 'anniversaryVideoModal') {
+  document.getElementById('anniversaryVideoFrame').src = '';
+}
+}
+});
+  }
+});
+// Smooth scroll para enlaces de navegación
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const targetId = this.getAttribute('href');
+if(targetId === '#' || targetId.startsWith('#!')) return; // Ignorar enlaces vacíos
+e.preventDefault();
+const targetElement = document.querySelector(targetId);
+if (targetElement) {
+  window.scrollTo({
+top: targetElement.offsetTop - 70, // Ajuste por el header fijo
+behavior: 'smooth'
+});
+}
+});
+});
+// LÓGICA PARA LA SECCIÓN DE COMENTARIOS
+const commentForm = document.getElementById('commentForm');
+const commentInput = document.getElementById('commentInput');
+const commentsDisplay = document.getElementById('commentsDisplay');
+const commentsStorageKey = 'interactiveMuralComments';
+const loadComments = () => {
+  const savedComments = JSON.parse(localStorage.getItem(commentsStorageKey)) || [];
+  commentsDisplay.innerHTML = '';
+  savedComments.forEach(commentText => {
+    const commentElement = document.createElement('div');
+    commentElement.classList.add('comment-item');
+    commentElement.textContent = commentText;
+    commentsDisplay.appendChild(commentElement);
+  });
+};
+const saveComment = (commentText) => {
+  const savedComments = JSON.parse(localStorage.getItem(commentsStorageKey)) || [];
+  savedComments.push(commentText);
+  localStorage.setItem(commentsStorageKey, JSON.stringify(savedComments));
+};
+if (commentForm) {
+  commentForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newComment = commentInput.value.trim();
+    if (newComment) {
+      saveComment(newComment);
+      loadComments();
+      commentInput.value = '';
+    }
+  });
+  loadComments();
+}
+// Lógica para reformas: toggle details
+document.querySelectorAll('.reform-card').forEach(card => {
+  card.addEventListener('click', (e) => {
+// Prevent toggling if a slider button was clicked
+if (e.target.closest('.slider-button') || e.target.closest('.play-button')) {
+  return;
+}
+card.classList.toggle('active');
+});
+});
+// Slider automático en hero
+const slider = document.getElementById('slider');
+const dots = document.querySelectorAll('.dot');
+let currentSlide = 0;
+const slideCount = 3;
+function showSlide(index) {
+  if (slider) {
+    slider.style.transform = `translateX(-${index * (100 / slideCount)}%)`;
+    dots.forEach(dot => dot.classList.remove('active'));
+    if (dots[index]) {
+      dots[index].classList.add('active');
+    }
+  }
+}
+function nextSlide() {
+  currentSlide = (currentSlide + 1) % slideCount;
+  showSlide(currentSlide);
+}
+dots.forEach((dot, index) => {
+  dot.addEventListener('click', () => {
+    currentSlide = index;
+    showSlide(currentSlide);
+  });
+});
+setInterval(nextSlide, 5000);
+// -- LÓGICA PARA LA LÍNEA DE TIEMPO --
+const timelineSlider = document.querySelector('.timeline-slider');
+const prevTimelineButton = document.querySelector('#linea-tiempo .timeline-nav.prev');
+const nextTimelineButton = document.querySelector('#linea-tiempo .timeline-nav.next');
+if (timelineSlider && prevTimelineButton && nextTimelineButton) {
+  const scrollAmount = () => {
+    return timelineSlider.querySelector('.timeline-item').offsetWidth;
+  };
+  nextTimelineButton.addEventListener('click', () => {
+    timelineSlider.scrollLeft += scrollAmount();
+  });
+  prevTimelineButton.addEventListener('click', () => {
+    timelineSlider.scrollLeft -= scrollAmount();
+  });
+}
+// == INICIO DE SCRIPT CORREGIDO Y OPTIMIZADO PARA SLIDER DE ERICKSON ==
+const eriksonSlider = document.querySelector('.erikson-slider');
+if (eriksonSlider) {
+  const eriksonStages = Array.from(eriksonSlider.querySelectorAll('.erikson-stage'));
+  const eriksonPrev = document.querySelector('.erikson-nav.prev');
+  const eriksonNext = document.querySelector('.erikson-nav.next');
+  let currentIndex = 0;
+  let isScrolling;
+  let gritoVideoIframe = document.getElementById('grito-video');
+  let gritoVideoStarted = false;
+// Función para actualizar la tarjeta activa (la que tiene el zoom)
+function updateActiveStage() {
+  const sliderCenter = eriksonSlider.getBoundingClientRect().left + eriksonSlider.offsetWidth / 2;
+  let closestIndex = -1;
+  let smallestDistance = Infinity;
+  eriksonStages.forEach((stage, index) => {
+    const stageCenter = stage.getBoundingClientRect().left + stage.offsetWidth / 2;
+    const distance = Math.abs(sliderCenter - stageCenter);
+    if (distance < smallestDistance) {
+      smallestDistance = distance;
+      closestIndex = index;
+    }
+  });
+  if (closestIndex !== -1) {
+    currentIndex = closestIndex;
+    eriksonStages.forEach((stage, index) => {
+      stage.classList.toggle('active', index === closestIndex);
+    });
+// Controlar la reproducción del video del Grito de Independencia (15 de septiembre)
+if (closestIndex === 5 && gritoVideoIframe && !gritoVideoStarted) {
+// Es la tarjeta del 15 de septiembre
+gritoVideoIframe.src = "https://www.youtube.com/embed/zCkWWfGQPRs?si=VNADT5GB_rhoKaj2&autoplay=1";
+gritoVideoStarted = true;
+} else if (closestIndex !== 5 && gritoVideoIframe && gritoVideoStarted) {
+// No es la tarjeta del 15 de septiembre, detener el video
+gritoVideoIframe.src = "about:blank";
+gritoVideoStarted = false;
+}
+}
+}
+// Función para centrar una tarjeta específica
+function centerStage(index, behavior = 'smooth') {
+  const stage = eriksonStages[index];
+  if (stage) {
+    const newScrollLeft = stage.offsetLeft - (eriksonSlider.offsetWidth / 2) + (stage.offsetWidth / 2);
+    eriksonSlider.scrollTo({
+      left: newScrollLeft,
+      behavior: behavior
+    });
+  }
+}
+// Evento de scroll con temporizador para evitar cálculos excesivos
+eriksonSlider.addEventListener('scroll', () => {
+  window.clearTimeout(isScrolling);
+  isScrolling = setTimeout(() => {
+    updateActiveStage();
+}, 150); // Un pequeño retardo para ejecutar después de que el usuario deja de hacer scroll
+});
+// Navegación con botones
+eriksonNext.addEventListener('click', () => {
+  let nextIndex = (currentIndex + 1) % eriksonStages.length;
+  centerStage(nextIndex);
+});
+eriksonPrev.addEventListener('click', () => {
+  let prevIndex = (currentIndex - 1 + eriksonStages.length) % eriksonStages.length;
+  centerStage(prevIndex);
+});
+// Estado inicial: activar la primera tarjeta al cargar la página
+// Usamos un pequeño Timeout para asegurar que todo esté renderizado
+setTimeout(() => {
+  updateActiveStage();
+}, 100);
+}
+// == FIN DE SCRIPT CORREGIDO Y OPTIMIZADO ==
+// === NUEVA LÓGICA PARA SLIDERS EN TARJETAS ===
+document.querySelectorAll('.image-slider').forEach(slider => {
+  const container = slider.querySelector('.slider-container');
+  const images = slider.querySelectorAll('.slider-image');
+  const prevButton = slider.querySelector('.prev');
+  const nextButton = slider.querySelector('.next');
+  let currentIndex = 0;
+  function updateSlider() {
+    container.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+  prevButton.addEventListener('click', (e) => {
+e.stopPropagation(); // Prevents the modal from closing
+currentIndex = (currentIndex - 1 + images.length) % images.length;
+updateSlider();
+});
+  nextButton.addEventListener('click', (e) => {
+e.stopPropagation(); // Prevents the modal from closing
+currentIndex = (currentIndex + 1) % images.length;
+updateSlider();
+});
+// Auto slide cada 5 segundos
+setInterval(() => {
+  currentIndex = (currentIndex + 1) % images.length;
+  updateSlider();
+}, 5000);
+});
+});
+</script>
+</body>
+</html>

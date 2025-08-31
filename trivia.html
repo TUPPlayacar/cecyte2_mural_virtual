@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mural Digital Interactivo - Trivias & Héroes</title>
+    <link rel="icon" type="image/png" href="imagen/logo.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1e5f3e 0%, #ffffff 50%, #d4002a 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            overflow-x: hidden;
+            padding-top: 80px; /* Space for fixed navbar */
+        }
+
+        /* Navigation Menu Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-logo a {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            background: linear-gradient(45deg, #1e5f3e, #d4002a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo a:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 30px;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(135deg, #1e5f3e, #d4002a);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 95, 62, 0.3);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #1e5f3e, #d4002a);
+            color: white;
+            box-shadow: 0 3px 10px rgba(30, 95, 62, 0.2);
+        }
+
+        /* Mobile Menu Toggle */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .bar {
+            width: 25px;
+            height: 3px;
+            background: linear-gradient(45deg, #1e5f3e, #d4002a);
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(15px);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                padding: 20px 0;
+                gap: 0;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-item {
+                margin: 10px 0;
+            }
+
+            .nav-link {
+                display: block;
+                margin: 5px 20px;
+                padding: 15px 20px;
+                font-size: 1.1rem;
+            }
+
+            /* Animated hamburger */
+            .nav-toggle.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav-toggle.active .bar:nth-child(1) {
+                transform: translateY(9px) rotate(45deg);
+            }
+
+            .nav-toggle.active .bar:nth-child(3) {
+                transform: translateY(-9px) rotate(-45deg);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(45deg, #1e5f3e, #d4002a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #34495e;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .section-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            background: linear-gradient(135deg, #1e5f3e, #2d7a4f);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-weight: bold;
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(30, 95, 62, 0.4);
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #d4002a, #e74c3c);
+            box-shadow: 0 5px 15px rgba(212, 0, 42, 0.3);
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Trivias Section */
+        .trivias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .trivia-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trivia-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1e5f3e, #d4002a);
+            transition: left 0.3s ease;
+        }
+
+        .trivia-card:hover::before {
+            left: 0;
+        }
+
+        .trivia-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .trivia-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .trivia-card h3 {
+            color: #1e5f3e;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .trivia-card p {
+            line-height: 1.6;
+            font-size: 1.05rem;
+            color: #555;
+        }
+
+        /* Heroes Section */
+        .heroes-intro {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .heroes-intro h2 {
+            color: #1e5f3e;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .heroes-categories {
+            margin-bottom: 40px;
+        }
+
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category h3 {
+            color: #d4002a;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .category h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #1e5f3e, #d4002a);
+            border-radius: 2px;
+        }
+
+        .heroes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .hero-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1e5f3e, #d4002a);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .hero-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: #1e5f3e;
+        }
+
+        .hero-number {
+            background: linear-gradient(135deg, #1e5f3e, #2d7a4f);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 15px;
+            font-size: 1.2rem;
+        }
+
+        .hero-card h4 {
+            color: #1e5f3e;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .hero-card p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .hero-card.revealed {
+            background: linear-gradient(135deg, rgba(30, 95, 62, 0.1), rgba(212, 0, 42, 0.1));
+            border-color: #d4002a;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .progress-text {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #1e5f3e;
+            font-weight: bold;
+        }
+
+        .progress-fill {
+            background: rgba(200, 200, 200, 0.3);
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar-inner {
+            background: linear-gradient(90deg, #1e5f3e, #d4002a);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .eagle {
+            position: fixed;
+            font-size: 2rem;
+            animation: fly 15s linear infinite;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @keyframes fly {
+            0% { left: -5%; top: 20%; }
+            25% { left: 25%; top: 10%; }
+            50% { left: 50%; top: 30%; }
+            75% { left: 75%; top: 15%; }
+            100% { left: 105%; top: 25%; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .floating-flag {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite;
+            z-index: 1000;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .trivias-grid,
+            .heroes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .toggle-btn {
+                padding: 12px 24px;
+                font-size: 1rem;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #d4002a;
+        }
+    </style>
+</head>
+<body>
+    <div class="eagle">🦅</div>
+    <div class="floating-flag"></div>
+
+    <!-- Navigation Menu - Identical to main page -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="periodico_mural_cecyte.html">🗞️ México Independiente</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="periodico_mural_cecyte.html" class="nav-link">🏠 Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">🧠 Trivias & Héroes</a>
+                </li>
+            </ul>
+            <div class="nav-toggle" onclick="toggleMobileMenu()">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🗞️ México Independiente</h1>
+            <p>Descubre los secretos, héroes y curiosidades que marcaron para siempre el corazón de nuestra patria</p>
+        </div>
+
+        <div class="section-toggle">
+            <button class="toggle-btn active" onclick="showSection('trivias')">
+                🧠 Trivias Curiosas
+            </button>
+            <button class="toggle-btn" onclick="showSection('heroes')">
+                🏆 15 Héroes Escondidos
+            </button>
+        </div>
+
+        <!-- Trivias Section -->
+        <div id="trivias" class="content-section active">
+            <div class="trivias-grid">
+                <div class="trivia-card">
+                    <span class="trivia-icon">🔔</span>
+                    <h3>La Campana Misteriosa</h3>
+                    <p>La Campana de Dolores pesa 750 kilos y solo se toca dos veces al año. ¡Es más pesada que un piano de cola!</p>
+                </div>
+
+                <div class="trivia-card">
+                    <span class="trivia-icon">⏰</span>
+                    <h3>El Grito Madrugador</h3>
+                    <p>El Grito de Independencia originalmente se dio el 16 de septiembre a las 5 AM, no el 15 en la noche como lo conocemos hoy.</p>
+                </div>
+
+                <div class="trivia-card">
+                    <span class="trivia-icon">👴</span>
+                    <h3>Revolución de la Tercera Edad</h3>
+                    <p>Miguel Hidalgo tenía 57 años cuando inició la Independencia. ¡Toda una revolución de la tercera edad que cambió México!</p>
+                </div>
+
+                <div class="trivia-card">
+                    <span class="trivia-icon">🗣️</span>
+                    <h3>El Grito en Náhuatl</h3>
+                    <p>El primer Grito lo dio Hidalgo en náhuatl para que los pueblos indígenas pudieran entenderlo y unirse a la causa.</p>
+                </div>
+
+                <div class="trivia-card">
+                    <span class="trivia-icon">👶</span>
+                    <h3>Héroes Muy Jóvenes</h3>
+                    <p>Los Niños Héroes tenían entre 13 y 19 años. El más joven era Francisco Márquez con apenas 13 años de edad.</p>
+                </div>
+
+                <div class="trivia-card">
+                    <span class="trivia-icon">🏴</span>
+                    <h3>Cuarta Bandera</h3>
+                    <p>El lábaro patrio actual es la cuarta versión oficial de la bandera mexicana. ¡Ha evolucionado con nuestra historia!</p>
+                </div>
+
+                <div class="trivia-card">
+                    <span class="trivia-icon">🎂</span>
+                    <h3>Cumpleaños Presidencial</h3>
+                    <p>Porfirio Díaz cambió la fecha oficial del Grito para que coincidiera con su cumpleaños el 15 de septiembre.</p>
+                </div>
+
+                <div class="trivia-card">
+                    <span class="trivia-icon">🎵</span>
+                    <h3>Origen del Mariachi</h3>
+                    <p>La palabra "mariachi" posiblemente viene del francés "mariage" (boda) de la época de la Intervención Francesa.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heroes Section -->
+        <div id="heroes" class="content-section">
+            <div class="heroes-intro">
+                <h2>🏆 Los 15 Héroes Escondidos</h2>
+                <p>Descubre a los valientes que forjaron nuestra libertad. ¡Haz clic en cada héroe para revelar su historia!</p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-text">Héroes Descubiertos: <span id="heroCount">0</span>/15</div>
+                <div class="progress-fill">
+                    <div class="progress-bar-inner" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="heroes-categories">
+                <div class="category">
+                    <h3>⭐ Los Inmortales (Conocidos)</h3>
+                    <div class="heroes-grid">
+                        <div class="hero-card" onclick="revealHero(this, 1)">
+                            <div class="hero-number">1</div>
+                            <h4>Miguel Hidalgo</h4>
+                            <p class="hero-description" style="display:none;">El Padre de la Patria. Sacerdote que inició la revolución de independencia con el famoso Grito de Dolores.</p>
+                            <p class="hero-preview">¿El Padre de la Patria?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 2)">
+                            <div class="hero-number">2</div>
+                            <h4>José María Morelos</h4>
+                            <p class="hero-description" style="display:none;">El Siervo de la Nación. Continuó la lucha tras la muerte de Hidalgo y organizó el primer congreso constituyente.</p>
+                            <p class="hero-preview">¿El Siervo de la Nación?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 3)">
+                            <div class="hero-number">3</div>
+                            <h4>Vicente Guerrero</h4>
+                            <p class="hero-description" style="display:none;">El primer presidente afromexicano. Abolió la esclavitud y su frase "La Patria es primero" es legendaria.</p>
+                            <p class="hero-preview">¿El primer presidente afromexicano?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 4)">
+                            <div class="hero-number">4</div>
+                            <h4>Agustín de Iturbide</h4>
+                            <p class="hero-description" style="display:none;">El consumador de la Independencia. Firmó los Tratados de Córdoba que consagraron la independencia mexicana.</p>
+                            <p class="hero-preview">¿El consumador?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 5)">
+                            <div class="hero-number">5</div>
+                            <h4>Los Niños Héroes</h4>
+                            <p class="hero-description" style="display:none;">Juan de la Barrera, Juan Escutia, Agustín Melgar, Fernando Montes de Oca, Vicente Suárez, Francisco Márquez. Defendieron Chapultepec hasta la muerte.</p>
+                            <p class="hero-preview">¿Los cadetes valientes?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="category">
+                    <h3>💎 Los Tesoros Ocultos (Menos Conocidos)</h3>
+                    <div class="heroes-grid">
+                        <div class="hero-card" onclick="revealHero(this, 6)">
+                            <div class="hero-number">6</div>
+                            <h4>Josefa Ortiz de Domínguez</h4>
+                            <p class="hero-description" style="display:none;">La Corregidora. Cerebro de la conspiración de Querétaro, avisó a los insurgentes cuando fueron descubiertos.</p>
+                            <p class="hero-preview">¿La mujer que alertó a todos?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 7)">
+                            <div class="hero-number">7</div>
+                            <h4>Leona Vicario</h4>
+                            <p class="hero-description" style="display:none;">Periodista y financiadora de la independencia. Primera mujer periodista de México y gran benefactora de la causa.</p>
+                            <p class="hero-preview">¿La primera periodista?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 8)">
+                            <div class="hero-number">8</div>
+                            <h4>Ignacio Allende</h4>
+                            <p class="hero-description" style="display:none;">El verdadero militar del movimiento. Capitán del ejército que se unió a Hidalgo y aportó la estrategia militar.</p>
+                            <p class="hero-preview">¿El estratega militar?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 9)">
+                            <div class="hero-number">9</div>
+                            <h4>Juan Aldama</h4>
+                            <p class="hero-description" style="display:none;">El mensajero valiente. Capitán que llevó la noticia del descubrimiento de la conspiración a Miguel Hidalgo.</p>
+                            <p class="hero-preview">¿El mensajero de la libertad?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 10)">
+                            <div class="hero-number">10</div>
+                            <h4>Mariano Matamoros</h4>
+                            <p class="hero-description" style="display:none;">El cura guerrero del sur. Sacerdote que se convirtió en uno de los mejores generales de Morelos.</p>
+                            <p class="hero-preview">¿El cura que se volvió guerrero?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 11)">
+                            <div class="hero-number">11</div>
+                            <h4>Hermenegildo Galeana</h4>
+                            <p class="hero-description" style="display:none;">El brazo derecho de Morelos. General valiente que nunca perdió una batalla y murió defendiendo la causa.</p>
+                            <p class="hero-preview">¿El invencible?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 12)">
+                            <div class="hero-number">12</div>
+                            <h4>Guadalupe Victoria</h4>
+                            <p class="hero-description" style="display:none;">El primer presidente de México. Su nombre real era Miguel Fernández y se cambió el nombre por la causa.</p>
+                            <p class="hero-preview">¿El primer mandatario?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 13)">
+                            <div class="hero-number">13</div>
+                            <h4>Nicolás Bravo</h4>
+                            <p class="hero-description" style="display:none;">El magnánimo. Famoso por perdonar la vida a 300 prisioneros españoles cuando pudo haberlos ejecutado.</p>
+                            <p class="hero-preview">¿El que perdonó enemigos?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 14)">
+                            <div class="hero-number">14</div>
+                            <h4>Francisco Xavier Mina</h4>
+                            <p class="hero-description" style="display:none;">El español que luchó por México. Militar español que se unió a la causa mexicana y murió por nuestra libertad.</p>
+                            <p class="hero-preview">¿El extranjero patriota?</p>
+                        </div>
+
+                        <div class="hero-card" onclick="revealHero(this, 15)">
+                            <div class="hero-number">15</div>
+                            <h4>Pedro Moreno</h4>
+                            <p class="hero-description" style="display:none;">El héroe olvidado de Guanajuato. Hacendado que financió y luchó en la independencia hasta dar su vida.</p>
+                            <p class="hero-preview">¿El héroe olvidado?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for hero completion -->
+    <div id="completionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>🎉 ¡Felicidades!</h2>
+            <p>Has descubierto a los 15 héroes de la Independencia Mexicana.</p>
+            <p><strong>¡Ahora conoces a los verdaderos forjadores de nuestra patria!</strong></p>
+            <p>¡Viva México!</p>
+        </div>
+    </div>
+
+    <script>
+        let revealedHeroes = 0;
+        const totalHeroes = 15;
+
+        // Navigation Functions
+        function toggleMobileMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            const navToggle = document.querySelector('.nav-toggle');
+            
+            navMenu.classList.toggle('active');
+            navToggle.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navMenu = document.querySelector('.nav-menu');
+            const navToggle = document.querySelector('.nav-toggle');
+            const isClickInsideNav = navToggle.contains(event.target) || navMenu.contains(event.target);
+            
+            if (!isClickInsideNav && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+            }
+        });
+
+        // Update showSection function
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(s => {
+                s.classList.remove('active');
+            });
+            
+            // Remove active class from all toggle buttons
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(section).classList.add('active');
+            
+            // Add active class to clicked button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                // Handle programmatic calls
+                const toggleBtns = document.querySelectorAll('.toggle-btn');
+                if (section === 'trivias') {
+                    toggleBtns[0].classList.add('active');
+                } else if (section === 'heroes') {
+                    toggleBtns[1].classList.add('active');
+                }
+            }
+            
+            // Close mobile menu if open
+            const navMenu = document.querySelector('.nav-menu');
+            const navToggle = document.querySelector('.nav-toggle');
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                navToggle.classList.remove('active');
+            }
+        }
+
+        function revealHero(element, heroNumber) {
+            if (element.classList.contains('revealed')) return;
+            
+            const preview = element.querySelector('.hero-preview');
+            const description = element.querySelector('.hero-description');
+            
+            // Hide preview and show description
+            preview.style.display = 'none';
+            description.style.display = 'block';
+            
+            // Mark as revealed
+            element.classList.add('revealed');
+            
+            // Update counter
+            revealedHeroes++;
+            updateProgress();
+            
+            // Add celebration effect
+            createCelebration(element);
+            
+            // Check if all heroes are revealed
+            if (revealedHeroes === totalHeroes) {
+                setTimeout(() => {
+                    showCompletionModal();
+                }, 1000);
+            }
+        }
+
+        function updateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const heroCount = document.getElementById('heroCount');
+            const percentage = (revealedHeroes / totalHeroes) * 100;
+            
+            heroCount.textContent = revealedHeroes;
+            progressBar.style.width = percentage + '%';
+        }
+
+        function createCelebration(element) {
+            // Create temporary celebration emoji
+            const celebration = document.createElement('div');
+            celebration.textContent = '⭐';
+            celebration.style.position = 'absolute';
+            celebration.style.fontSize = '2rem';
+            celebration.style.animation = 'celebrationFloat 1s ease-out forwards';
+            celebration.style.pointerEvents = 'none';
+            celebration.style.zIndex = '1000';
+            
+            const rect = element.getBoundingClientRect();
+            celebration.style.left = rect.left + rect.width/2 + 'px';
+            celebration.style.top = rect.top + 'px';
+            
+            document.body.appendChild(celebration);
+            
+            // Remove after animation
+            setTimeout(() => {
+                document.body.removeChild(celebration);
+            }, 1000);
+        }
+
+        function showCompletionModal() {
+            document.getElementById('completionModal').style.display = 'block';
+            
+            // Create fireworks effect
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    createFirework();
+                }, i * 200);
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('completionModal').style.display = 'none';
+        }
+
+        function createFirework() {
+            const firework = document.createElement('div');
+            const emojis = ['🎆', '🎇', '✨', '⭐', '🌟'];
+            firework.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            firework.style.position = 'fixed';
+            firework.style.fontSize = '2rem';
+            firework.style.left = Math.random() * window.innerWidth + 'px';
+            firework.style.top = Math.random() * window.innerHeight + 'px';
+            firework.style.animation = 'fireworkExplosion 1.5s ease-out forwards';
+            firework.style.pointerEvents = 'none';
+            firework.style.zIndex = '2001';
+            
+            document.body.appendChild(firework);
+            
+            setTimeout(() => {
+                document.body.removeChild(firework);
+            }, 1500);
+        }
+
+        // Add CSS animations dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes celebrationFloat {
+                0% { transform: translateY(0) scale(1); opacity: 1; }
+                100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
+            }
+            
+            @keyframes fireworkExplosion {
+                0% { transform: scale(0) rotate(0deg); opacity: 1; }
+                50% { transform: scale(1.5) rotate(180deg); opacity: 0.8; }
+                100% { transform: scale(0.5) rotate(360deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('completionModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Add some interactive sound effects (optional)
+        function playSound(type) {
+            // This would require audio files, but we can simulate with visual feedback
+            if (type === 'reveal') {
+                console.log('Hero revealed!');
+            }
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            if (e.key === '1') {
+                showSection('trivias');
+            }
+            if (e.key === '2') {
+                showSection('heroes');
+            }
+        });
+
+        // Add random trivia rotation effect
+        let triviaRotation = 0;
+        setInterval(() => {
+            const triviaCards = document.querySelectorAll('.trivia-card');
+            triviaCards.forEach((card, index) => {
+                if (index === triviaRotation) {
+                    card.style.transform = 'scale(1.05)';
+                    card.style.boxShadow = '0 20px 40px rgba(212, 0, 42, 0.2)';
+                } else {
+                    card.style.transform = 'scale(1)';
+                    card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+                }
+            });
+            triviaRotation = (triviaRotation + 1) % triviaCards.length;
+        }, 3000);
+
+        // Add parallax effect to eagle
+        let eaglePosition = 0;
+        setInterval(() => {
+            const eagle = document.querySelector('.eagle');
+            eaglePosition += 0.5;
+            if (eaglePosition > window.innerWidth + 100) {
+                eaglePosition = -100;
+            }
+        }, 100);
+
+        // Add confetti when all trivias are read (scroll detection)
+        let triviasSeen = new Set();
+        
+        function checkTriviaViewing() {
+            const triviaCards = document.querySelectorAll('.trivia-card');
+            triviaCards.forEach((card, index) => {
+                const rect = card.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+                
+                if (isVisible && !triviasSeen.has(index)) {
+                    triviasSeen.add(index);
+                    // Add subtle animation when trivia comes into view
+                    card.style.animation = 'fadeInUp 0.6s ease-out';
+                }
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize progress bar
+            updateProgress();
+            
+            // Initial trivia viewing check
+            setTimeout(checkTriviaViewing, 500);
+        });
+    </script>
+</body>
+</html>
