@@ -395,6 +395,9 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
+      min-height: 400px; /* Ajuste: Aumentar altura mínima para mostrar más contenido */
+      display: flex;
+      flex-direction: column;
     }
     .reform-card:hover {
       transform: translateY(-5px);
@@ -434,6 +437,7 @@
     }
     .reform-card.active .reform-details {
       max-height: 1000px; /* Aumentado para el slider */
+      overflow-y: auto; /* Ajuste: Agregar scroll si el contenido excede */
     }
     /* Menú circular de interacciones */
     .interactions-section {
@@ -1313,6 +1317,10 @@
       margin-top: 1rem;
       overflow: hidden;
       border-radius: var(--radius);
+      cursor: grab; /* Ajuste: Cursor para indicar deslizable */
+    }
+    .image-slider:active {
+      cursor: grabbing;
     }
     .slider-container {
       display: flex;
@@ -2308,24 +2316,88 @@ document.querySelectorAll('.image-slider').forEach(slider => {
   const prevButton = slider.querySelector('.prev');
   const nextButton = slider.querySelector('.next');
   let currentIndex = 0;
+  let isDragging = false;
+  let startPos = 0;
+  let currentTranslate = 0;
+  let prevTranslate = 0;
+  let animationID;
+
   function updateSlider() {
     container.style.transform = `translateX(-${currentIndex * 100}%)`;
   }
+
   prevButton.addEventListener('click', (e) => {
-e.stopPropagation(); // Prevents the modal from closing
-currentIndex = (currentIndex - 1 + images.length) % images.length;
-updateSlider();
-});
+    e.stopPropagation(); // Prevents the modal from closing
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateSlider();
+  });
+
   nextButton.addEventListener('click', (e) => {
-e.stopPropagation(); // Prevents the modal from closing
-currentIndex = (currentIndex + 1) % images.length;
-updateSlider();
-});
-// Auto slide cada 5 segundos
-setInterval(() => {
-  currentIndex = (currentIndex + 1) % images.length;
-  updateSlider();
-}, 5000);
+    e.stopPropagation(); // Prevents the modal from closing
+    currentIndex = (currentIndex + 1) % images.length;
+    updateSlider();
+  });
+
+  // Auto slide cada 5 segundos
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % images.length;
+    updateSlider();
+  }, 5000);
+
+  // Lógica para swipe con mouse
+  const getPositionX = (event) => event.type.includes('mouse') ? event.pageX : event.touches[0].clientX;
+
+  const animation = () => {
+    setSliderPosition();
+    if (isDragging) requestAnimationFrame(animation);
+  };
+
+  const setSliderPosition = () => {
+    container.style.transform = `translateX(${currentTranslate}%)`;
+  };
+
+  const touchStart = (index) => {
+    return function (event) {
+      currentIndex = index;
+      startPos = getPositionX(event);
+      isDragging = true;
+      animationID = requestAnimationFrame(animation);
+      slider.classList.add('grabbing');
+    };
+  };
+
+  const touchMove = (event) => {
+    if (isDragging) {
+      const currentPosition = getPositionX(event);
+      currentTranslate = prevTranslate + ((currentPosition - startPos) / slider.offsetWidth) * 100;
+    }
+  };
+
+  const touchEnd = () => {
+    isDragging = false;
+    cancelAnimationFrame(animationID);
+    const movedBy = currentTranslate - prevTranslate;
+
+    if (movedBy < -20 && currentIndex < images.length - 1) currentIndex += 1;
+    if (movedBy > 20 && currentIndex > 0) currentIndex -= 1;
+
+    setPositionByIndex();
+    slider.classList.remove('grabbing');
+  };
+
+  const setPositionByIndex = () => {
+    currentTranslate = currentIndex * -100;
+    prevTranslate = currentTranslate;
+    setSliderPosition();
+  };
+
+  container.addEventListener('mousedown', touchStart(currentIndex));
+  container.addEventListener('touchstart', touchStart(currentIndex));
+  container.addEventListener('mousemove', touchMove);
+  container.addEventListener('touchmove', touchMove);
+  container.addEventListener('mouseup', touchEnd);
+  container.addEventListener('touchend', touchEnd);
+  container.addEventListener('mouseleave', touchEnd);
 });
 });
 </script>
